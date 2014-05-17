@@ -8,6 +8,6 @@ class TimeAwayType(models.Model):
 class TimeAway(models.Model):
 	user = models.ForeignKey(User)
 	date = models.DateField()
-	type = models.ForeignKey(TimeAwayType)
+	type = models.ForeignKey(TimeAwayType, null=True, blank=True)
 	def get_absolute_url(self):
 		return "time_away"

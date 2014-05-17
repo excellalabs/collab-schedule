@@ -1,8 +1,10 @@
 from django.views.generic import CreateView, TemplateView
-from .models import time_away
+from .models import TimeAway
+from .forms import TimeAwayForm
 
 class TimeAwayView(CreateView):
-	model = time_away
+	model = TimeAway
+	form_class = TimeAwayForm
 
 class CalendarView(TemplateView):
 	template_name = "calendar.html"

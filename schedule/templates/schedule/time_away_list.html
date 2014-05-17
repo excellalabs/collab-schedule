@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block "content" %}
+{% for item in vacation_list %}
+    {{ item.date }}
+{% endfor %}
+{% endblock %}

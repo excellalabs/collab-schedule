@@ -1,3 +1,6 @@
 collab-schedule
 ===============
-https://travis-ci.org/excellaco/collab-schedule.svg
+
+![Build Status](https://travis-ci.org/excellaco/collab-schedule.svg?branch=master)
+
+

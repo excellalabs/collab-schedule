@@ -1,20 +1,27 @@
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from .models import TimeAwayType
+from .models import TimeAwayType, TimeAway
+from django.contrib.auth.models import User
+from datetime import date
+from core.models import Person
 
 class ScheduleTest(TestCase):
 
+    fixtures = ['core-test-fixtures', ]
+
     def test_vacation_list_user_with_vacation(self):
-        response = self.client.get(reverse('schedule:list'))
+        self.client.login(username='test1@example.com', password='1')
+        user = User.objects.get(username='test1@example.com')
+        vacation = TimeAway(user=user, date=date.today())
+        vacation.save()
+
+        response = self.client.get(reverse('schedule:time_away_list', args=('test1',)))
         self.assertEquals(200, response.status_code)
 
     def test_vacation_list_user_without_vacation(self):
-        response = self.client.get(reverse('schedule:list'))
+        self.client.login(username='test1@example.com', password='1')
+        response = self.client.get(reverse('schedule:time_away_list', args=('test1',)))
         self.assertEquals(200, response.status_code)
-
-    def test_vacation_list_invalid_user(self):
-        response = self.client.get(reverse('schedule:list'))
-        self.assertEquals(404, response.status_code)
 
     def test_timeAwayType_list_returns_all(self):
         # Arrange
@@ -35,3 +42,6 @@ class ScheduleTest(TestCase):
     	response = self.client.get(reverse('schedule:time_away'))
     	self.assertEquals(200, response.status_code)
 
+    def test_vacation_list_login_required(self):
+        response = self.client.get(reverse('schedule:time_away_list', args=('test1',)))
+        self.assertEquals(302, response.status_code)

@@ -1,7 +1,22 @@
 {% extends "base.html" %}
 
 {% block "content" %}
-{% for item in vacation_list %}
-    {{ item.date }}
-{% endfor %}
+<div id="content">
+	<table>
+		<thead>
+			<tr>
+				<th>Date</th>
+				<th>Type</th>
+			</tr>
+		</thead>
+	    <tbody>
+        {% for item in vacation_list %}
+            <tr>
+	    		<td>{{ item.date }}</td>
+	    		<td>{{ item.type.code }}</td>
+	    	</tr>
+        {% endfor %}
+	    </tbody>
+	</table>
+</div>
 {% endblock %}

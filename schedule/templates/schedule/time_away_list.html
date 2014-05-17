@@ -13,7 +13,7 @@
         {% for item in vacation_list %}
             <tr>
 	    		<td>{{ item.date }}</td>
-	    		<td>{{ item.type }}</td>
+	    		<td>{{ item.get_type_display }}</td>
 	    	</tr>
         {% endfor %}
 	    </tbody>

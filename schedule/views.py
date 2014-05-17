@@ -8,6 +8,7 @@ from django.template import RequestContext
 from django.contrib.auth.models import User
 from core.models import Person
 from django.core.urlresolvers import reverse
+from datetime import date
 
 TEMPLATE_PATH = 'schedule/'
 
@@ -38,6 +39,8 @@ def time_away_list(req, stub):
     person = Person.objects.get(stub=stub)
 
     vacation_list = TimeAway.objects.filter(user=person.user)
+    vacation_list = vacation_list.filter(date__gte=date.today)
+    vacation_list = vacation_list.order_by('date')[:10]
 
     p = _create_params(req)
     p['vacation_list'] = vacation_list

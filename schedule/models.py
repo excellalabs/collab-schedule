@@ -1,13 +1,13 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from core.models import Person
 
 class TimeAwayType(models.Model):
 	code = models.CharField(max_length=30)
 
 class TimeAway(models.Model):
-	user = models.ForeignKey(User)
+	user = models.ForeignKey(Person)
 	date = models.DateField()
 	type = models.ForeignKey(TimeAwayType, null=True, blank=True)
 	def get_absolute_url(self):
-		return "time_away"
+		return reverse("schedule:time_away")

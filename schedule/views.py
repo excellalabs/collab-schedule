@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from core.models import Person
+from django.core.urlresolvers import reverse
 
 TEMPLATE_PATH = 'schedule/'
 
@@ -16,8 +17,18 @@ def _create_params(req):
     return p
 
 class TimeAwayView(CreateView):
-	model = TimeAway
-	form_class = TimeAwayForm
+    model = TimeAway
+    form_class = TimeAwayForm
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.user = Person.objects.get(user=self.request.user)
+        obj.save()
+        return super(TimeAwayView, self).form_valid(form)
+
+    def get_success_url(self):
+        person = Person.objects.get(user=self.request.user)
+        return reverse("schedule:time_away_list", args=[person.stub])
 
 class CalendarView(TemplateView):
 	template_name = "calendar.html"

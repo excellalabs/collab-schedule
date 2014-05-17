@@ -14,3 +14,4 @@ class TimeAwayForm(forms.ModelForm):
 
 	class Meta: 
 		model = TimeAway
+		fields = ['date']

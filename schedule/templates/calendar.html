@@ -2,7 +2,7 @@
 
 {% block "content" %}
 <div id="content">
-	<div class="calendar"></div>
+    <div class="calendar"></div>
 </div>
 {% endblock %}
 
@@ -12,8 +12,12 @@
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/fullcalendar/1.6.4/fullcalendar.min.js"></script>
     <script type="text/javascript">
-		$('.calendar').fullCalendar({
-			// TODO: configuration goes here
-		});
-	</script>
+        $('.calendar').fullCalendar({
+            eventSources: [{
+                url: '/schedule/calendar/json/',
+                color: '#ebcccc',
+                textColor: 'black'
+            }]
+        });
+    </script>
 {% endblock %}

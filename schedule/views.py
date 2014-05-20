@@ -8,7 +8,9 @@ from django.template import RequestContext
 from django.contrib.auth.models import User
 from core.models import Person
 from django.core.urlresolvers import reverse
+from django.http import HttpResponse
 from datetime import date
+import json
 
 TEMPLATE_PATH = 'schedule/'
 
@@ -32,7 +34,7 @@ class TimeAwayView(CreateView):
         return reverse("schedule:time_away_list", args=[person.stub])
 
 class CalendarView(TemplateView):
-	template_name = "calendar.html"
+    template_name = "calendar.html"
 
 @login_required
 def time_away_list(req, stub):
@@ -46,3 +48,19 @@ def time_away_list(req, stub):
     p['vacation_list'] = vacation_list
     return render_to_response(TEMPLATE_PATH + "time_away_list.html", p,
                               context_instance=RequestContext(req))
+
+def calendar_json(req):
+    json_list = []
+    for entry in TimeAway.objects.all():
+        id = entry.id
+        if entry.type == 'AWA':
+            title = entry.user.user.last_name + " - AWA"
+        elif entry.type == 'AWAY':
+            title = entry.user.user.last_name + " - OOO"
+        start = entry.date.strftime("%Y-%m-%dT%H:%M:%S")
+        allDay = True
+
+        json_entry = {'id':id, 'start':start, 'allDay':allDay, 'title': title}
+        json_list.append(json_entry)
+
+    return HttpResponse(json.dumps(json_list), content_type='application/json')

@@ -9,7 +9,8 @@ from django.contrib.auth.models import User
 from core.models import Person
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
-from datetime import date
+from datetime import date, datetime
+from django.db.models import Q
 import json
 
 TEMPLATE_PATH = 'schedule/'
@@ -51,11 +52,23 @@ def time_away_list(req, stub):
 
 def calendar_json(req):
     json_list = []
-    for entry in TimeAway.objects.all():
+    start_date = req.GET.get('start', None)
+    end_date = req.GET.get('end', None)
+    data_type = req.GET.get('type', None)
+
+    filter_query = Q()
+    if start_date:
+        filter_query = filter_query&Q(date__gte=datetime.fromtimestamp(int(float(start_date))))
+    if end_date:
+        filter_query = filter_query&Q(date__lte=datetime.fromtimestamp(int(float(end_date))))
+    if data_type:
+        filter_query = filter_query&Q(type=data_type)
+
+    for entry in TimeAway.objects.filter(filter_query):
         id = entry.id
-        if entry.type == 'AWA':
+        if entry.type == TimeAway.AWA:
             title = entry.user.user.last_name + " - AWA"
-        elif entry.type == 'AWAY':
+        elif entry.type == TimeAway.OOO:
             title = entry.user.user.last_name + " - OOO"
         start = entry.date.strftime("%Y-%m-%dT%H:%M:%S")
         allDay = True

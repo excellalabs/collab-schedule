@@ -1,0 +1,15 @@
+.calendar-sidebar {
+    width: 200px;
+    position: absolute;
+}
+.calendar {
+    margin-left: 200px;
+}
+.content {
+    overflow: hidden;
+    position: relative;
+}
+.project-close a {
+    text-decoration: none;
+    color: #D12124;
+}

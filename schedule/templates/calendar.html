@@ -1,7 +1,28 @@
 {% extends "base.html" %}
 
+{% block "css_files" %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/schedule.css">
+{% endblock %}
+
 {% block "content" %}
 <div id="content">
+    <div class="calendar-sidebar">
+        <div class="projects">
+            My Projects:
+            <ul>
+                {% for project in projects %}
+                    <li class="filter">
+                        <a href="{% url 'schedule:calendar' %}?projects={{ project }}">{{ project|title }}</a>
+                        {% if project in selected_projects %}
+                            <span class="project-close">
+                                <a href="{% url 'schedule:calendar' %}">x</a>
+                            </span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
     <div class="calendar"></div>
 </div>
 {% endblock %}
@@ -17,19 +38,22 @@
                 {
                     url: '/schedule/calendar/json/',
                     data: {
-                        type: 'OOO',
+                        project: '__personal__',
                     },
-                    color: '#EBCCCC',
+                    color: '#FF4838',
                     textColor: 'black'
                 },
+                {% for project in selected_projects %}
                 {
                     url: '/schedule/calendar/json/',
                     data: {
-                        type: 'AWA',
+                        project: '{{ project }}',
                     },
-                    color: '#FFE69F',
+                    color: "#{% cycle 'FFBA45' 'F1FF5D' '79FF87' '7A90FF' %}",
+
                     textColor: 'black'
                 }
+                {% endfor %}
             ]
         });
     </script>

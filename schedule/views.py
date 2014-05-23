@@ -7,6 +7,7 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.models import User
 from core.models import Person
+from core.taggit.models import TaggedItem
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from datetime import date, datetime
@@ -37,6 +38,13 @@ class TimeAwayView(CreateView):
 class CalendarView(TemplateView):
     template_name = "calendar.html"
 
+    def get_context_data(self, **kwargs):
+        context = super(CalendarView, self).get_context_data(**kwargs)
+        context['projects'] = [ti.tag.slug for ti in Person.objects.get(user=self.request.user).tagged_items.filter(tag_category__slug='staff-directory-my-projects')]
+        selected_projects = self.request.GET.get('projects', '').split(',')
+        context['selected_projects'] = set(selected_projects).intersection(context['projects'])
+        return context
+
 @login_required
 def time_away_list(req, stub):
     person = Person.objects.get(stub=stub)
@@ -55,6 +63,7 @@ def calendar_json(req):
     start_date = req.GET.get('start', None)
     end_date = req.GET.get('end', None)
     data_type = req.GET.get('type', None)
+    project = req.GET.get('project')
 
     filter_query = Q()
     if start_date:
@@ -63,6 +72,13 @@ def calendar_json(req):
         filter_query = filter_query&Q(date__lte=datetime.fromtimestamp(int(float(end_date))))
     if data_type:
         filter_query = filter_query&Q(type=data_type)
+
+    if project == '__personal__':
+        filter_query = filter_query&Q(user=req.user)
+    else:
+        user_ids = [ti.object_id for ti in TaggedItem.objects.filter(tag_category__slug='staff-directory-my-projects', tag__slug=project)]
+        filter_query = filter_query&Q(user__in=user_ids)
+        filter_query = filter_query&~Q(user=req.user)
 
     for entry in TimeAway.objects.filter(filter_query):
         id = entry.id

@@ -38,6 +38,7 @@
                 {
                     url: '/schedule/calendar/json/',
                     data: {
+                        user_id: '{{ user.id }}',
                         project: '__personal__',
                     },
                     color: '#FF4838',
@@ -47,6 +48,7 @@
                 {
                     url: '/schedule/calendar/json/',
                     data: {
+                        user_id: '{{ user.id }}',
                         project: '{{ project }}',
                     },
                     color: "#{% cycle 'FFBA45' 'F1FF5D' '79FF87' '7A90FF' %}",

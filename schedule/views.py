@@ -43,6 +43,7 @@ class CalendarView(TemplateView):
         context['projects'] = [ti.tag.slug for ti in Person.objects.get(user=self.request.user).tagged_items.filter(tag_category__slug='staff-directory-my-projects')]
         selected_projects = self.request.GET.get('projects', '').split(',')
         context['selected_projects'] = set(selected_projects).intersection(context['projects'])
+        context['user'] = self.request.user
         return context
 
 @login_required
@@ -60,10 +61,11 @@ def time_away_list(req, stub):
 
 def calendar_json(req):
     json_list = []
+    person = Person.objects.get(user_id=req.GET.get('user_id'))
     start_date = req.GET.get('start', None)
     end_date = req.GET.get('end', None)
     data_type = req.GET.get('type', None)
-    project = req.GET.get('project')
+    project = req.GET.get('project', '__personal__')
 
     filter_query = Q()
     if start_date:
@@ -74,11 +76,11 @@ def calendar_json(req):
         filter_query = filter_query&Q(type=data_type)
 
     if project == '__personal__':
-        filter_query = filter_query&Q(user=req.user)
+        filter_query = filter_query&Q(user=person)
     else:
         user_ids = [ti.object_id for ti in TaggedItem.objects.filter(tag_category__slug='staff-directory-my-projects', tag__slug=project)]
         filter_query = filter_query&Q(user__in=user_ids)
-        filter_query = filter_query&~Q(user=req.user)
+        filter_query = filter_query&~Q(user=person)
 
     for entry in TimeAway.objects.filter(filter_query):
         id = entry.id

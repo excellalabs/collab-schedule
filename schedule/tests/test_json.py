@@ -22,9 +22,11 @@ class JsonTest(TestCase):
         TimeAway.objects.create(user=user2, date=future, type=TimeAway.AWA)
         TimeAway.objects.create(user=user, date=past, type=TimeAway.AWA)
 
-        json_results = self.client.get(reverse('schedule:calendar_json'))
+        json_results = self.client.get(reverse('schedule:calendar_json'), {'user_id':user.user.id})
         data = json.loads(json_results.content)
-        self.assertEqual(len(data), 3)
+        self.assertEqual(len(data), 2)
+        self.assertIn(user.user.last_name, data[0]['title'])
+        self.assertIn(user.user.last_name, data[1]['title'])
 
     def test_json_type(self):
         user = Person.objects.get(user_id=1)
@@ -33,7 +35,8 @@ class JsonTest(TestCase):
         TimeAway.objects.create(user=user, date=today, type=TimeAway.OOO)
         TimeAway.objects.create(user=user, date=today, type=TimeAway.AWA)
 
-        json_results = self.client.get(reverse('schedule:calendar_json'), {'type':'AWA'})
+        json_results = self.client.get(reverse('schedule:calendar_json'), {'user_id':user.user.id,
+                                                                           'type':'AWA'})
         data = json.loads(json_results.content)
         self.assertEqual(len(data), 1)
         self.assertIn('AWA', data[0]['title'])
@@ -49,7 +52,8 @@ class JsonTest(TestCase):
         TimeAway.objects.create(user=user, date=future, type=TimeAway.OOO)
         TimeAway.objects.create(user=user, date=past, type=TimeAway.OOO)
 
-        json_results = self.client.get(reverse('schedule:calendar_json'), {'start':now})
+        json_results = self.client.get(reverse('schedule:calendar_json'), {'user_id':user.user.id,
+                                                                           'start':now})
         data = json.loads(json_results.content)
         self.assertEqual(len(data), 2)
         self.assertIn(today.strftime("%Y-%m-%dT%H:%M:%S"), [data[0]['start'], data[1]['start']])
@@ -67,7 +71,8 @@ class JsonTest(TestCase):
         TimeAway.objects.create(user=user, date=future, type=TimeAway.OOO)
         TimeAway.objects.create(user=user, date=past, type=TimeAway.OOO)
 
-        json_results = self.client.get(reverse('schedule:calendar_json'), {'end':now})
+        json_results = self.client.get(reverse('schedule:calendar_json'), {'user_id':user.user.id,
+                                                                           'end':now})
         data = json.loads(json_results.content)
         self.assertEqual(len(data), 2)
         self.assertIn(today.strftime("%Y-%m-%dT%H:%M:%S"), [data[0]['start'], data[1]['start']])

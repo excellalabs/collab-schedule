@@ -7,6 +7,8 @@
 {% block "content" %}
 <div id="content">
     <div class="calendar-sidebar">
+        <a class="btn time-away-button" href="{% url "schedule:time_away_list" %}">My Upcoming Dates</a>`
+        <a class="btn time-away-button" href="{% url "schedule:time_away" %}">Add New Dates</a>`
         <div class="projects">
             My Projects:
             <ul>
@@ -19,6 +21,21 @@
                             </span>
                         {% endif %}
                     </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="persons">
+            Selected Persons:
+            <ul>
+                {% for person in selected_projects_persons %}
+                    <li class="person">
+                        <a href="{% url "schedule:time_away_list" person.stub %}">
+                        {{ person.user.first_name }}
+                        {{ person.user.last_name }}
+                        </a>
+                    </li>
+                    {% empty %}
+                    <li>None</li>
                 {% endfor %}
             </ul>
         </div>

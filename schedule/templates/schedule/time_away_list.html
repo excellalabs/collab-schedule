@@ -2,6 +2,13 @@
 
 {% block "content" %}
 <div id="content">
+    <h2>
+    {% if person.user == request.user %}
+    My upcoming events
+    {% else %}
+    Upcoming events for {{ person.user.first_name }} {{ person.user.last_name }}
+    {% endif %}
+    </h2>
 	<table>
 		<thead>
 			<tr>

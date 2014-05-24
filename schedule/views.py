@@ -40,21 +40,28 @@ class CalendarView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(CalendarView, self).get_context_data(**kwargs)
+        # TODO cleanup/optimize this mess of queries
         context['projects'] = [ti.tag.slug for ti in Person.objects.get(user=self.request.user).tagged_items.filter(tag_category__slug='staff-directory-my-projects')]
         selected_projects = self.request.GET.get('projects', '').split(',')
         context['selected_projects'] = set(selected_projects).intersection(context['projects'])
+        selected_projects_persons_id_list = [ti.object_id for ti in TaggedItem.objects.filter(tag_category__slug='staff-directory-my-projects', tag__slug__in=context['selected_projects']).exclude(object_id=Person.objects.get(user=self.request.user).id)]
+        context['selected_projects_persons'] = Person.objects.filter(id__in=selected_projects_persons_id_list)
         context['user'] = self.request.user
         return context
 
 @login_required
-def time_away_list(req, stub):
-    person = Person.objects.get(stub=stub)
+def time_away_list(req, stub=None):
+    if stub:
+        person = Person.objects.get(stub=stub)
+    else:
+        person = Person.objects.get(user=req.user)
 
-    vacation_list = TimeAway.objects.filter(user=person.user)
+    vacation_list = TimeAway.objects.filter(user=person)
     vacation_list = vacation_list.filter(date__gte=date.today)
     vacation_list = vacation_list.order_by('date')[:10]
 
     p = _create_params(req)
+    p['person'] = person
     p['vacation_list'] = vacation_list
     return render_to_response(TEMPLATE_PATH + "time_away_list.html", p,
                               context_instance=RequestContext(req))

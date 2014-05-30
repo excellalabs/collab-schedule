@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block "css_files" %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/schedule.css">
+{% endblock %}
+
 {% block "content" %}
 <div id="content">
     <h2>
@@ -9,7 +13,8 @@
     Upcoming events for {{ person.user.first_name }} {{ person.user.last_name }}
     {% endif %}
     </h2>
-	<table>
+    {% if vacation_list.count > 0 %}
+	<table class="calendar-event-list">
 		<thead>
 			<tr>
 				<th>Date</th>
@@ -25,5 +30,15 @@
         {% endfor %}
 	    </tbody>
 	</table>
+    {% else %}
+        <div class="calendar-event-empty-list">
+            No events scheduled
+        </div>
+    {% endif %}
+    {% if person.user == request.user %}
+        <div class="calendar-buttons">
+            <a class="btn time-away-button" href="{% url "schedule:time_away" %}">Add New Dates</a>`
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

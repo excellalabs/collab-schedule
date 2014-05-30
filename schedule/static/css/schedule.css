@@ -9,10 +9,32 @@
     overflow: hidden;
     position: relative;
 }
+.calendar-event-list, 
+.calendar-event-empty-list {
+    margin: 1em 0;
+}
 .project-close a {
     text-decoration: none;
     color: #D12124;
 }
 .time-away-button {
     margin: 1em 0;
+}
+.calendar-time-away-form label {
+    display: inline-block;
+    padding: 0.625em 0 0.625em;
+    position: relative;
+    width: 22.85714%;
+    margin-right: 2.5%;
+    text-align: right;
+}
+.calendar-time-away-form .controls {
+    width: 48.57142%;
+    display: inline-block;
+    margin: 0.625em 0;
+}
+.calendar-time-away-form .form-actions {
+    display: block;
+    margin-top: 1.375em;
+    margin-left: 25.5%;
 }

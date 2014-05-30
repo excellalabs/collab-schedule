@@ -8,7 +8,7 @@ class TimeAway(models.Model):
 
     TIME_AWAY_TYPES = (
         (AWA, 'Alternate Work Arrangement'),
-        (OOO, 'Away')
+        (OOO, 'Out of Office')
     )
     user = models.ForeignKey(Person)
     date = models.DateField()
